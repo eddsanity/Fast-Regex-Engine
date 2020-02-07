@@ -3,6 +3,7 @@
 
 #include "string.h"     // needed for `char* strncat`
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef enum { false, true } bool;
 
