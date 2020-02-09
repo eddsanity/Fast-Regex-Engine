@@ -1,40 +1,45 @@
 #include "stack.h"
 
+stack*
+init_stack()
+{
+    stack* out_stack = (stack*)malloc(sizeof(stack));
+    out_stack->stack_top = -1;
+    return out_stack;
+}
+
 // ordinary stack push and pop, pretty self-explanatory
 
 void
-stack_push(char c)
+stack_push(stack* st, char c)
 {
-    if(stack_top >= const_stack_size - 1)
+    if(st->stack_top >= const_stack_size - 1)
     {    /* handle stack overflow, do nothing for now. */ }
     else
-    {
-	stack_top++;
-	stack[stack_top] = c;
-    }
+	st->s[st->stack_top++] = c;
 }
 
 char
-stack_pop()
+stack_pop(stack* st)
 {
-    if(stack_top < 0)
+    if(st->stack_top < 0)
     {
 	/* handle stack underflow, do nothing for now. */
 	// underflow could occur because of unmatched parenthesis.
     }
     else
 	// return the character at the top of the stack then decrement the stack pointer, effectively popping.
-	return stack[stack_top--];
+	return st->s[st->stack_top--];
 }
 
 char
-stack_peek()
+stack_peek(stack* st)
 {
-    return stack[stack_top];
+    return st->s[st->stack_top];
 }
 
 size_t
-stack_size()
+stack_size(stack* st)
 {
-    return stack_top;
+    return st->stack_top;
 }
