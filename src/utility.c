@@ -46,7 +46,7 @@ re_format(char* ufInput)
 bool
 re_isOperator(char c)
 {
-    if(c == '+' || c == '^' || c == '*' || c == '|' || c == '?' || c == '.' || c == '(')
+    if(c == '+' || c == '^' || c == '*' || c == '|' || c == '?' || c == '.')
 	return true;
     else return false;
 }
@@ -56,17 +56,15 @@ re_isOperator(char c)
 int
 re_getPrecedence(char op)
 {
-    if(op == '(')
-	return 0;
     if(op == '|')
-	return 1;
-    if(op == '.')
-	return 2;
-    if(op == '?' || op == '*' || op == '+')
-	return 3;
-    if(op == '^')
 	return 4;
-    return 5;
+    if(op == '.')
+	return 3;
+    if(op == '?' || op == '*' || op == '+')
+	return 2;
+    if(op == '^')
+	return 1;
+    return 0;
 }
 
 

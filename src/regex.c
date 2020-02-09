@@ -57,21 +57,22 @@ re_infix2postfix(char* regex)
     char* formatted_regex = re_format(regex);
 
     size_t formatted_length = strlen(formatted_regex);
-    
+    printf("formatted length: %d\n", formatted_length);
     size_t parenthesis_count = re_parenthesisCount(formatted_regex);
-
+    printf("parenthesis count: %d\n", parenthesis_count);
     // the postfix expression discards parenthesis so its length is the original expression's length - # of parenthesis
     size_t postfix_length = formatted_length - parenthesis_count;
-    char* postfix_regex = (char*)malloc(postfix_length * sizeof(char));
+    char* postfix_regex = (char*)malloc((postfix_length + 1) * sizeof(char));
 
     size_t postfixPtr = 0;
 
     for(size_t i = 0; i < formatted_length; ++i)
     {
-	switch(formatted_regex[i])
+	char curr_char = formatted_regex[i];
+	switch(curr_char)
 	{
 	case '(':
-	    stack_push(st, formatted_regex[i]);
+	    stack_push(st, curr_char);
 	    break;
 	case ')':
 	    while(stack_peek(st) != '(')
@@ -79,25 +80,30 @@ re_infix2postfix(char* regex)
 	    stack_pop(st);
 	    break;
 	default:
-	    while(stack_size(st) > 0)
+	    if(re_isOperator(curr_char) == true)
 	    {
-		char top = stack_peek(st);
+		while(stack_size(st) >= 0)
+		{
+		    char top = stack_peek(st);
 
-		int top_precedence = re_getPrecedence(top);
-		int curr_precedence = re_getPrecedence(formatted_regex[i]);
+		    int top_precedence = re_getPrecedence(top);
+		    int curr_precedence = re_getPrecedence(curr_char);
 
-		if(top_precedence >= curr_precedence)
-		    postfix_regex[postfixPtr++] = stack_pop(st);
-		else
-		    break;
+		    if(top_precedence >= curr_precedence)
+			postfix_regex[postfixPtr++] = stack_pop(st);
+		    else
+			break;
+		}
 	    }
-	    stack_push(st, formatted_regex[i]);
+	    else
+		postfix_regex[postfixPtr++] = curr_char;
 	    break;
 	}
     }
     while(stack_size(st) > 0)
-	postfix_regex[postfixPtr++] = stack_pop(st);
+    	postfix_regex[postfixPtr++] = stack_pop(st);
 
+    postfix_regex[postfix_length] = '\0';
     return postfix_regex;
 }
 

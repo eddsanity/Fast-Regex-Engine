@@ -1,5 +1,15 @@
 #include "stack.h"
 
+#define const_stack_size 1024
+
+typedef
+struct Stack
+{
+    char s[const_stack_size];
+    int  stack_top;
+} stack;
+
+
 stack*
 init_stack()
 {
@@ -38,7 +48,7 @@ stack_peek(stack* st)
     return st->s[st->stack_top];
 }
 
-size_t
+int
 stack_size(stack* st)
 {
     return st->stack_top;

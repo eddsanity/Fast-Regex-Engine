@@ -7,14 +7,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#define const_stack_size 1024
-
-typedef
-struct Stack
-{
-    char s[const_stack_size];
-    int  stack_top;
-} stack;
+typedef struct Stack stack;
 
 stack*
 init_stack();
@@ -28,7 +21,7 @@ stack_pop(stack*);
 char
 stack_peek(stack*);
 
-size_t
+int
 stack_size(stack*);
 
 #endif
