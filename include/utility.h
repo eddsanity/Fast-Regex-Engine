@@ -1,9 +1,9 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include "string.h"     // needed for `char* strncat`
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
 
 typedef enum { false, true } bool;
 
@@ -19,5 +19,8 @@ re_isOperator(char);
 // returns the precedence of the input operator.
 int
 re_getPrecedence(char);
+
+size_t
+re_parenthesisCount(char*);
 
 #endif

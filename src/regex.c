@@ -50,6 +50,52 @@ struct re_state
 char*
 re_infix2postfix(char* regex)
 {
+    // format the input regular expression
+    // i.e add explicit concatenation operator
+    char* formatted_regex = re_format(regex);
+
+    size_t formatted_length = strlen(formatted_regex);
     
+    size_t parenthesis_count = re_parenthesisCount(formatted_regex);
+
+    // the postfix expression discards parenthesis so its length is the original expression's length - # of parenthesis
+    size_t postfix_length = formatted_length - parenthesis_count;
+    char* postfix_regex = (char*)malloc(postfix_length * sizeof(char));
+
+    size_t postfixPtr = 0;
+    
+    for(size_t i = 0; i < formatted_length; ++i)
+    {
+	switch(formatted_regex[i])
+	{
+	case '(':
+	    stack_push(formatted_regex[i]);
+	    break;
+	case ')':
+	    while(stack_peek() != '(')
+		postfix_regex[postfixPtr++] = stack_pop();
+	    stack_pop();
+	    break;
+	default:
+	    while(stack_size() > 0)
+	    {
+		char top = stack_peek();
+
+		int top_precedence = re_getPrecedence(top);
+		int curr_precedence = re_getPrecedence(formatted_regex[i]);
+
+		if(top_precedence >= curr_precedence)
+		    postfix_regex[postfixPtr++] = stack_pop();
+		else
+		    break;
+	    }
+	    stack_push(formatted_regex[i]);
+	    break;
+	}
+    }
+    while(stack_size() > 0)
+	postfix_regex[postfixPtr++] = stack_pop();
+
+    return postfix_regex;
 }
 

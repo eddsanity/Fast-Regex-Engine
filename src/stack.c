@@ -5,7 +5,7 @@
 void
 stack_push(char c)
 {
-    if(stack_top >= stack_size - 1)
+    if(stack_top >= const_stack_size - 1)
     {    /* handle stack overflow, do nothing for now. */ }
     else
     {
@@ -27,3 +27,14 @@ stack_pop()
 	return stack[stack_top--];
 }
 
+char
+stack_peek()
+{
+    return stack[stack_top];
+}
+
+size_t
+stack_size()
+{
+    return stack_top;
+}

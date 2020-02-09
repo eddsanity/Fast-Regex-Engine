@@ -66,4 +66,17 @@ re_getPrecedence(char op)
 	return 3;
     if(op == '^')
 	return 4;
+    return 5;
+}
+
+
+size_t
+re_parenthesisCount(char* infixRegex)
+{
+    size_t pCount = 0;
+    for(size_t i = 0; infixRegex[i] != 0; ++i)
+	if(infixRegex[i] == '(' || infixRegex[i] == ')')
+	    ++pCount;
+
+    return pCount;
 }
