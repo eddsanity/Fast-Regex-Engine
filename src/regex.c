@@ -57,9 +57,8 @@ re_infix2postfix(char* regex)
     char* formatted_regex = re_format(regex);
 
     size_t formatted_length = strlen(formatted_regex);
-    printf("formatted length: %d\n", formatted_length);
     size_t parenthesis_count = re_parenthesisCount(formatted_regex);
-    printf("parenthesis count: %d\n", parenthesis_count);
+    
     // the postfix expression discards parenthesis so its length is the original expression's length - # of parenthesis
     size_t postfix_length = formatted_length - parenthesis_count;
     char* postfix_regex = (char*)malloc((postfix_length + 1) * sizeof(char));
@@ -69,6 +68,19 @@ re_infix2postfix(char* regex)
     for(size_t i = 0; i < formatted_length; ++i)
     {
 	char curr_char = formatted_regex[i];
+	/*  Standard infix to postfix conversion algorithm
+	 *  1. Scan characters
+	 *  2. If,
+	 *  2.1 Character is '(', push it onto stack
+	 *  2.2 Character is ')', pop the stack into output until ')' is matched with a '('
+	 *  2.3 Else,
+	 *  3.1 If character is an operator and stack is empty, push operator onto stack and continue scanning
+	 *  3.1.1 Else, peek the stack's top and compare their precedences.
+	 *        If scanned character's precedence is greater than top's, push the scanned character onto stack
+	 *        Else, pop the stack into the output until scanned character's precedence is greater or top is '('
+	 *              and push the scanned character
+	 *  3.2 If scanned isn't an operator, append to output
+	 */
 	switch(curr_char)
 	{
 	case '(':
@@ -80,14 +92,10 @@ re_infix2postfix(char* regex)
 	    stack_pop(st);
 	    break;
 	default:
-	    if(re_isOperator(curr_char) == true)
+	    if(re_isOperator(curr_char) == true && stack_size(st) < 0)
+		stack_push(st, curr_char);
+	    else if(re_isOperator(curr_char))
 	    {
-		if(stack_size(st) < 0)
-		{
-		    stack_push(st, curr_char);
-		    break;
-		}
-		
 		while(stack_size(st) >= 0)
 		{
 		    char top = stack_peek(st);
@@ -118,10 +126,10 @@ re_infix2postfix(char* regex)
 	    break;
 	}
     }
+
+    // left-over stack content (scanning is over and stack still not empty)
     while(stack_size(st) >= 0)
-    {
 	postfix_regex[postfixPtr++] = stack_pop(st);
-    }
 
     postfix_regex[postfix_length] = '\0';
     return postfix_regex;
