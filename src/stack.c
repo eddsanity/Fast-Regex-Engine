@@ -14,6 +14,7 @@ stack*
 init_stack()
 {
     stack* out_stack = (stack*)malloc(sizeof(stack));
+    memset(out_stack, 0, const_stack_size);
     out_stack->stack_top = -1;
     return out_stack;
 }
@@ -26,7 +27,7 @@ stack_push(stack* st, char c)
     if(st->stack_top >= const_stack_size - 1)
     {    /* handle stack overflow, do nothing for now. */ }
     else
-	st->s[st->stack_top++] = c;
+	st->s[++st->stack_top] = c;
 }
 
 char
@@ -38,8 +39,10 @@ stack_pop(stack* st)
 	// underflow could occur because of unmatched parenthesis.
     }
     else
+    {
 	// return the character at the top of the stack then decrement the stack pointer, effectively popping.
 	return st->s[st->stack_top--];
+    }
 }
 
 char

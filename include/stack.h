@@ -5,6 +5,7 @@
  *  Push and Pop functions do not handle overflow/underflow yet.
  */
 #include <stddef.h>
+#include <string.h>
 #include <stdlib.h>
 
 typedef struct Stack stack;

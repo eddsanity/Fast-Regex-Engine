@@ -82,6 +82,12 @@ re_infix2postfix(char* regex)
 	default:
 	    if(re_isOperator(curr_char) == true)
 	    {
+		if(stack_size(st) < 0)
+		{
+		    stack_push(st, curr_char);
+		    break;
+		}
+		
 		while(stack_size(st) >= 0)
 		{
 		    char top = stack_peek(st);
@@ -89,10 +95,22 @@ re_infix2postfix(char* regex)
 		    int top_precedence = re_getPrecedence(top);
 		    int curr_precedence = re_getPrecedence(curr_char);
 
-		    if(top_precedence >= curr_precedence)
-			postfix_regex[postfixPtr++] = stack_pop(st);
-		    else
+		    if(curr_precedence > top_precedence)
+		    {
+			stack_push(st, curr_char);
 			break;
+		    }
+		    else
+		    {
+			while(curr_precedence <= top_precedence && top != '(')
+			{
+			    postfix_regex[postfixPtr++] = stack_pop(st);
+			    top = stack_peek(st);
+			    top_precedence = re_getPrecedence(top);
+			}
+			stack_push(st, curr_char);
+			break;
+		    }
 		}
 	    }
 	    else
@@ -100,8 +118,10 @@ re_infix2postfix(char* regex)
 	    break;
 	}
     }
-    while(stack_size(st) > 0)
-    	postfix_regex[postfixPtr++] = stack_pop(st);
+    while(stack_size(st) >= 0)
+    {
+	postfix_regex[postfixPtr++] = stack_pop(st);
+    }
 
     postfix_regex[postfix_length] = '\0';
     return postfix_regex;
