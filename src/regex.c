@@ -8,7 +8,7 @@
  */
 
 /*  Currently, this implementation only implements the repetition metacharacters ('+', '?', '*')
- *  And concatenation/alteration (AND/OR)
+ *  And concatenation/alteration ("AND"/"OR")
  *  All of which can be represented with a partial NFA that has only two (or less) arrows going out of it
  *  i.e only two decisions to make
  *  This is the reasoning behind every state having only two pointers to other states.
@@ -130,8 +130,12 @@ re_infix2postfix(char* regex)
     // left-over stack content (scanning is over and stack still not empty)
     while(stack_size(st) >= 0)
 	postfix_regex[postfixPtr++] = stack_pop(st);
-
     postfix_regex[postfix_length] = '\0';
+
+    // The stack and the formatted regex string are no longer needed at this point
+    free(formatted_regex);
+    free(st);
+    
     return postfix_regex;
 }
 

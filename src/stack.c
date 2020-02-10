@@ -19,7 +19,7 @@ init_stack()
     return out_stack;
 }
 
-// ordinary stack push and pop, pretty self-explanatory
+// ordinary stack push/pop/peek/size, pretty self-explanatory
 
 void
 stack_push(stack* st, char c)
@@ -39,10 +39,8 @@ stack_pop(stack* st)
 	// underflow could occur because of unmatched parenthesis.
     }
     else
-    {
 	// return the character at the top of the stack then decrement the stack pointer, effectively popping.
 	return st->s[st->stack_top--];
-    }
 }
 
 char
