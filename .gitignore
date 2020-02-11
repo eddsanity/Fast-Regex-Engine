@@ -1,3 +1,4 @@
 *.exe
 main.c
-build.bat
+*.bat
+/tests/test_executables

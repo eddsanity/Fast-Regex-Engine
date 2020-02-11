@@ -10,12 +10,12 @@ re_format(char* ufInput)
  
     for(int i = 0; i < in_length; ++i)
     {
-        char current_char = ufInput[i];
+        char curr_char = ufInput[i];
         if(i + 1 < in_length)
         {
             char next_char = ufInput[i+1];
  
-            if(current_char != '(' && next_char != ')' && !re_isOperator(next_char))
+            if(curr_char != '(' && next_char != ')' && !re_isOperator(next_char) && curr_char != '|')
                 oLen++;
         }
     }
@@ -26,13 +26,13 @@ re_format(char* ufInput)
  
     for(int i = 0; i < in_length; ++i)
     {
-        char current_char = ufInput[i];
+        char curr_char = ufInput[i];
         if(i + 1 < in_length)
         {
             char next_char = ufInput[i+1];
-            output[oPtr] = current_char,oPtr++;
+            output[oPtr] = curr_char,oPtr++;
  
-            if(current_char != '(' && next_char != ')' && !re_isOperator(next_char))
+            if(curr_char != '(' && next_char != ')' && !re_isOperator(next_char) && curr_char != '|')
                 output[oPtr] = '.',oPtr++;
         }
     }
@@ -52,18 +52,18 @@ re_isOperator(char c)
 }
 
 
-// lower numbers are higher precedence
+// lower number = lower precedence
 int
 re_getPrecedence(char op)
 {
     if(op == '|')
-	return 4;
-    if(op == '.')
-	return 3;
-    if(op == '?' || op == '*' || op == '+')
-	return 2;
-    if(op == '^')
 	return 1;
+    if(op == '.')
+	return 2;
+    if(op == '?' || op == '*' || op == '+')
+	return 3;
+    if(op == '^')
+	return 4;
     return 0;
 }
 

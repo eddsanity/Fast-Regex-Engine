@@ -46,7 +46,10 @@ stack_pop(stack* st)
 char
 stack_peek(stack* st)
 {
-    return st->s[st->stack_top];
+    if(st->stack_top < 0)
+	return 'a';
+    else
+	return st->s[st->stack_top];
 }
 
 int

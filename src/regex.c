@@ -102,24 +102,37 @@ re_infix2postfix(char* regex)
 
 		    int top_precedence = re_getPrecedence(top);
 		    int curr_precedence = re_getPrecedence(curr_char);
-
-		    if(curr_precedence > top_precedence)
+		    
+		    if(top_precedence >= curr_precedence)
 		    {
-			stack_push(st, curr_char);
-			break;
-		    }
-		    else
-		    {
-			while(curr_precedence <= top_precedence && top != '(')
+			while(top_precedence >= curr_precedence && top != '(')
 			{
 			    postfix_regex[postfixPtr++] = stack_pop(st);
 			    top = stack_peek(st);
 			    top_precedence = re_getPrecedence(top);
 			}
-			stack_push(st, curr_char);
 			break;
 		    }
+		    else
+			break;
+		    /* if(curr_precedence > top_precedence) */
+		    /* { */
+		    /* 	stack_push(st, curr_char); */
+		    /* 	break; */
+		    /* } */
+		    /* else */
+		    /* { */
+		    /* 	while(curr_precedence <= top_precedence && top != '(') */
+		    /* 	{ */
+		    /* 	    postfix_regex[postfixPtr++] = stack_pop(st); */
+		    /* 	    top = stack_peek(st); */
+		    /* 	    top_precedence = re_getPrecedence(top); */
+		    /* 	} */
+		    /* 	stack_push(st, curr_char); */
+		    /* 	break; */
+		    /* } */
 		}
+		stack_push(st, curr_char);
 	    }
 	    else
 		postfix_regex[postfixPtr++] = curr_char;
