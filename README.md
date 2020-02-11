@@ -7,11 +7,21 @@ This is my implementation of Ken Thompson's regular expressions engine, discusse
 
 `cd Fast-Regex-Engine`
 
-Note that `main.c` isn't part of the repository, you have to provide this yourself.
+Note that `main.c` isn't part of the repository, you have to provide this yourself. (Assuming you'll be using the regex engine in main.c)
 
 `gcc main.c src/*.c -Iinclude/ -o RE.exe`
 
+# Running tests
+
+`cd tests/`
+
+`gcc test.c ../src/*.c -I../include/ -o test.exe`
+
+Console will write on screen unit tests and overall testing result.
+
 # Documentation
 Code is heavily commented.
+
+
 
 ### TBC
