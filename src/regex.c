@@ -75,11 +75,11 @@ re_infix2postfix(char* regex)
 	 *  2.2 Character is ')', pop the stack into output until ')' is matched with a '('
 	 *  2.3 Else,
 	 *  3.1 If character is an operator and stack is empty, push operator onto stack and continue scanning
-	 *  3.1.1 Else, peek the stack's top and compare their precedences.
-	 *        If scanned character's precedence is greater than top's, push the scanned character onto stack
-	 *        Else, pop the stack into the output until scanned character's precedence is greater or top is '('
-	 *              and push the scanned character
-	 *  3.2 If scanned isn't an operator, append to output
+	 *  3.1.1 Else if operator and stack isn't empty, peek the stack's top.
+	 *        pop the stack into the output as long as the stack's top has greater or equal precedence as
+	 *        scanned character.
+	 *        push the scanned character after the popping is over.
+	 *  3.1.2 If scanned isn't an operator, append to output
 	 */
 	switch(curr_char)
 	{
@@ -96,41 +96,16 @@ re_infix2postfix(char* regex)
 		stack_push(st, curr_char);
 	    else if(re_isOperator(curr_char))
 	    {
-		while(stack_size(st) >= 0)
-		{
-		    char top = stack_peek(st);
+		char top = stack_peek(st);
 
-		    int top_precedence = re_getPrecedence(top);
-		    int curr_precedence = re_getPrecedence(curr_char);
+		int top_precedence = re_getPrecedence(top);
+		int curr_precedence = re_getPrecedence(curr_char);
 		    
-		    if(top_precedence >= curr_precedence)
-		    {
-			while(top_precedence >= curr_precedence && top != '(')
-			{
-			    postfix_regex[postfixPtr++] = stack_pop(st);
-			    top = stack_peek(st);
-			    top_precedence = re_getPrecedence(top);
-			}
-			break;
-		    }
-		    else
-			break;
-		    /* if(curr_precedence > top_precedence) */
-		    /* { */
-		    /* 	stack_push(st, curr_char); */
-		    /* 	break; */
-		    /* } */
-		    /* else */
-		    /* { */
-		    /* 	while(curr_precedence <= top_precedence && top != '(') */
-		    /* 	{ */
-		    /* 	    postfix_regex[postfixPtr++] = stack_pop(st); */
-		    /* 	    top = stack_peek(st); */
-		    /* 	    top_precedence = re_getPrecedence(top); */
-		    /* 	} */
-		    /* 	stack_push(st, curr_char); */
-		    /* 	break; */
-		    /* } */
+		while(top_precedence >= curr_precedence && top != '(')
+		{
+		    postfix_regex[postfixPtr++] = stack_pop(st);
+		    top = stack_peek(st);
+		    top_precedence = re_getPrecedence(top);
 		}
 		stack_push(st, curr_char);
 	    }
@@ -145,8 +120,6 @@ re_infix2postfix(char* regex)
 	postfix_regex[postfixPtr++] = stack_pop(st);
     postfix_regex[postfix_length] = '\0';
 
-    // The stack and the formatted regex string are no longer needed at this point
-    free(formatted_regex);
     free(st);
     
     return postfix_regex;
