@@ -1,9 +1,0 @@
-@echo off
-
-IF EXIST test_executables/formatting_test.exe (
-   start test_executables/formatting_test.exe
-   echo running formatting test
-) ELSE (
-   echo formatting test not found
-)
-
