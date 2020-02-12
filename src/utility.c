@@ -6,7 +6,7 @@ re_format(char* ufInput)
     //preprocessing to count the size of output
  
     int in_length = strlen(ufInput);
-    int oLen = in_length;
+    int out_length = in_length;
  
     for(int i = 0; i < in_length; ++i)
     {
@@ -16,13 +16,12 @@ re_format(char* ufInput)
             char next_char = ufInput[i+1];
  
             if(curr_char != '(' && next_char != ')' && !re_isOperator(next_char) && curr_char != '|')
-                oLen++;
+                out_length++;
         }
     }
  
-    char* output;
-    int oPtr = 0;
-    output = (char*)malloc(oLen * sizeof(char));
+    int outPtr = 0;
+    char* output = (char*)malloc(out_length * sizeof(char));
  
     for(int i = 0; i < in_length; ++i)
     {
@@ -30,14 +29,14 @@ re_format(char* ufInput)
         if(i + 1 < in_length)
         {
             char next_char = ufInput[i+1];
-            output[oPtr] = curr_char,oPtr++;
+            output[outPtr] = curr_char,outPtr++;
  
             if(curr_char != '(' && next_char != ')' && !re_isOperator(next_char) && curr_char != '|')
-                output[oPtr] = '.',oPtr++;
+                output[outPtr] = '.',outPtr++;
         }
     }
-    output[oPtr] = ufInput[strlen(ufInput)-1];
-    output[oLen] = '\0';
+    output[outPtr] = ufInput[strlen(ufInput)-1];
+    output[out_length] = '\0';
  
     return output;
 }

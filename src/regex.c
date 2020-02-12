@@ -92,9 +92,7 @@ re_infix2postfix(char* regex)
 	    stack_pop(st);
 	    break;
 	default:
-	    if(re_isOperator(curr_char) == true && stack_size(st) < 0)
-		stack_push(st, curr_char);
-	    else if(re_isOperator(curr_char))
+	    if(re_isOperator(curr_char))
 	    {
 		char top = stack_peek(st);
 

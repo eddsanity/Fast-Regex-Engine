@@ -46,6 +46,7 @@ stack_pop(stack* st)
 char
 stack_peek(stack* st)
 {
+    // does not handle peeking when stack is empty properly. Just returns the character 'a' for now as a work-around.
     if(st->stack_top < 0)
 	return 'a';
     else
