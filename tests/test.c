@@ -30,7 +30,7 @@ TEST_FORMATTING()
 	}
 	printf("%-10s: %s\n", "INPUT", test_cases[idx]);
 	printf("%-10s: %s\n", "OUTPUT", re_format(test_cases[idx]));
-	printf("%-10s: %s\n", "EXPECTED", accepted_output[idx]);
+	printf("%-10s: %s\n\n", "EXPECTED", accepted_output[idx]);
 	idx++;
     }
     if(test_status == passed)
@@ -60,7 +60,7 @@ TEST_INFIX2POSTFIX()
 	}
 	printf("%-10s: %s\n", "INPUT", test_cases[idx]);
 	printf("%-10s: %s\n", "OUTPUT", re_infix2postfix(test_cases[idx]));
-	printf("%-10s: %s\n", "EXPECTED", accepted_output[idx]);
+	printf("%-10s: %s\n\n", "EXPECTED", accepted_output[idx]);
 	idx++;
     }
     if(test_status == passed)
