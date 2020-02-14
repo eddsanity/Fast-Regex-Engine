@@ -63,12 +63,38 @@ union ptr_list
     re_state* curr_state;
 } ptr_list;
 
+// create a ptr_list containing outptr
 ptr_list*
-create_list(re_state** outp)
+create_list(re_state** outptr)
 {
-    ptr_list* list = (ptr_list*)outp;
+    ptr_list* list = (ptr_list*)outptr;
     list->next = NULL;
     return list;
+}
+
+void
+patch_list(ptr_list* list, re_state* start)
+{
+    ptr_list* next;
+    while(list)
+    {
+	next = list->next;
+	list->curr_state = start;
+	list = next;
+    }
+}
+
+// appends two ptr_lists to each other and returns the result (one list)
+ptr_list*
+append(ptr_list* first_list, ptr_list* second_list)
+{
+    ptr_list* tmp = first_list;
+    // traverse till the linked list's end and set the end item's next to the second_list's start
+    while(first_list->next)
+	first_list = first_list->next;
+    first_list->next = second_list;
+    
+    return tmp;
 }
 
 /*  A stack of NFA `fragments` is maintained by the Regex compiler. 
