@@ -1,5 +1,8 @@
 #include "regex.h"
 
+#define CONST_SPLIT 257
+#define CONST_MATCH 256
+
 /*
  * This is an implementation of Ken Thompson's Regular Expressions engine.
  * It was introduced in his 1968 CACM paper.
@@ -246,19 +249,46 @@ re_postfix2nfa(char* postfix_regex)
 	switch(curr_char)
 	{
 	case '.':
+	    expr2 = *--stackPtr;
+	    expr1 = *--stackPtr;
+	    patch_list(expr1.out, expr2.initial_state);
+	    *stackPtr++ = init_fragment(expr1.initial_state, expr2.out);
 	    break;
 	case '|':
+	    expr2 = *--stackPtr;
+	    expr1 = *--stackPtr;
+	    state = init_state(CONST_SPLIT, expr1.initial_state, expr2.initial_state);
+	    *stackPtr++ = init_fragment(state, append(expr1.out, expr2.out));
 	    break;
 	case '?':
+	    expr = *--stackPtr;
+	    state = init_state(CONST_SPLIT, expr.initial_state, NULL);
+	    *stackPtr++ = init_fragment(state, append(expr.out, create_list(&state->out_down)));
 	    break;
 	case '*':
+	    expr = *--stackPtr;
+	    state = init_state(CONST_SPLIT, expr.initial_state, NULL);
+	    patch_list(expr.out, state);
+	    *stackPtr++ = init_fragment(state, create_list(&state->out_down));
 	    break;
 	case '+':
+	    expr = *--stackPtr;
+	    state = init_state(CONST_SPLIT, expr.initial_state, NULL);
+	    patch_list(expr.out, state);
+	    *stackPtr++ = init_fragment(expr.initial_state, create_list(&state->out_down));
 	    break;
 	default:
+	    state = init_state(curr_char, NULL, NULL);
+	    *stackPtr++ = init_fragment(state, create_list(&state->out_down));
 	    break;
 	}
     }
+
+    expr = *--stackPtr;
+    if(stackPtr != frag_stack)
+	return NULL;
+
+    patch_list(expr.out, &matching_state);
 
     // the complete NFA's starting state
     return expr.initial_state;
