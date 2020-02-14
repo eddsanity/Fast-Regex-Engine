@@ -302,11 +302,10 @@ struct List
     re_state** state;
     int n;
 } List;
-
 List first_list, second_list;
 int list_id;
 
-// adds re_state `state` to List `list`
+// adds re_state `state` to List `list` if it's not already in the list
 void
 add_state(List* list, re_state* state)
 {
@@ -329,4 +328,62 @@ init_list(re_state* start, List* list)
     list_id++;
     add_state(list, start);
     return list;
+}
+
+// returns true if the final state in the NFA contains the matching/accepting state (if string matches)
+// false otherwise
+bool
+is_match(List* list)
+{
+    for(size_t idx = 0; idx < list->n; ++idx)
+	if(list->state[idx] == &matching_state)
+	    return true;
+    return false;
+}
+
+// computes the next list by advancing the NFA past a single character using the current list
+void
+step(List* curr_list, int f_t, List* next_list)
+{
+    re_state* state;
+    list_id++;
+    next_list->n = 0;
+    for(size_t idx = 0; idx < curr_list->n; ++idx)
+    {
+	state = curr_list->state[idx];
+	if(state->fragment_type == f_t)
+	    add_state(next_list, state->out_up);
+    }
+}
+
+
+// Runs the constructed NFA to check whether it actually matches the string or not
+bool
+match(re_state* start, char* in_string)
+{
+    int f_t;
+    List* curr_list;
+    List* next_list;
+    List* tmp;
+
+    curr_list = init_list(start, &first_list);
+    next_list = &second_list;
+    for(size_t idx = 0; in_string[idx] != 0; ++idx)
+    {
+	f_t = in_string[idx] & 0xFF;
+	step(curr_list, f_t, next_list);
+	tmp = curr_list;
+	curr_list = next_list;
+	next_list = tmp;
+    }
+    return is_match(curr_list);
+}
+
+
+void
+re_init()
+{
+    first_list.state = malloc(state_count * sizeof(first_list.state[0]));
+    second_list.state = malloc(state_count * sizeof(second_list.state[0]));
+    
 }
