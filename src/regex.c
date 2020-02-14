@@ -293,3 +293,40 @@ re_postfix2nfa(char* postfix_regex)
     // the complete NFA's starting state
     return expr.initial_state;
 }
+
+
+// Array list to track States
+typedef
+struct List
+{
+    re_state** state;
+    int n;
+} List;
+
+List first_list, second_list;
+int list_id;
+
+// adds re_state `state` to List `list`
+void
+add_state(List* list, re_state* state)
+{
+    if(state == NULL || state->lastList == list_id)
+	return;
+    state->lastList = list_id;
+    if(state->fragment_type == CONST_SPLIT)
+    {
+	add_state(list, state->out_up);
+	add_state(list, state->out_down);
+	return;
+    }
+    list->state[list->n++] = state;
+}
+
+List*
+init_list(re_state* start, List* list)
+{
+    list->n = 0;
+    list_id++;
+    add_state(list, start);
+    return list;
+}
