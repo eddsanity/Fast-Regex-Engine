@@ -35,6 +35,68 @@ struct re_state
     int lastList;
 } re_state;
 
+// TODO: eliminate global variables
+re_state matching_state = { 256 };
+int state_count;
+
+// Initialize re_states
+re_state*
+init_state(int f_t, re_state* out1, re_state* out2)
+{
+    re_state* state;
+
+    state_count++;
+
+    state = malloc(sizeof(*state));
+    state->fragment_type = f_t;
+    state->out_up = out1;
+    state->out_down = out2;
+    state->lastList = 0;
+    return state;
+}
+
+
+typedef
+union ptr_list
+{
+    union ptr_list* next;
+    re_state* curr_state;
+} ptr_list;
+
+ptr_list*
+create_list(re_state** outp)
+{
+    ptr_list* list = (ptr_list*)outp;
+    list->next = NULL;
+    return list;
+}
+
+/*  A stack of NFA `fragments` is maintained by the Regex compiler. 
+ *  Literals push new fragments onto the stakc while operators pop fragments off the stack and push a new fragment.
+ */
+
+/*  An NFA fragment is a degenerate NFA.
+ *  i.e an NFA without a matching state (or a partial NFA)
+ *  
+ */
+
+typedef
+struct nfa_fragment
+{
+    re_state* start_state;
+    ptr_list* out;
+} nfa_fragment;
+
+
+// initializing an NFA fragment
+nfa_fragment
+init_fragment(re_state* start, ptr_list* out)
+{
+    nfa_fragment frag;
+    frag.start_state = start;
+    frag.out = out;
+    return frag;
+}
 
 /*  In the paper, Ken converts the input infix regex into postfix as to make operating on them easier.
  *  This might be possible to do without such a conversion but the point is to implement Ken's paper.
@@ -74,12 +136,11 @@ re_infix2postfix(char* regex)
 	 *  2.1 Character is '(', push it onto stack
 	 *  2.2 Character is ')', pop the stack into output until ')' is matched with a '('
 	 *  2.3 Else,
-	 *  3.1 If character is an operator and stack is empty, push operator onto stack and continue scanning
-	 *  3.1.1 Else if operator and stack isn't empty, peek the stack's top.
-	 *        pop the stack into the output as long as the stack's top has greater or equal precedence as
-	 *        scanned character.
-	 *        push the scanned character after the popping is over.
-	 *  3.1.2 If scanned isn't an operator, append to output
+	 *  3.1 If character is an operator
+	 *      pop the stack into the output as long as the stack's top has greater or equal precedence as
+	 *      the scanned character.
+	 *      Then push the scanned character after the popping is over.
+	 *  3.2 If scanned isn't an operator, append to output
 	 */
 	switch(curr_char)
 	{
@@ -122,4 +183,5 @@ re_infix2postfix(char* regex)
     
     return postfix_regex;
 }
+
 
