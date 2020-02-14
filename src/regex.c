@@ -63,6 +63,7 @@ union ptr_list
     re_state* curr_state;
 } ptr_list;
 
+/// Utility functions for manipulating the ptr_lists
 // create a ptr_list containing outptr
 ptr_list*
 create_list(re_state** outptr)
@@ -72,19 +73,20 @@ create_list(re_state** outptr)
     return list;
 }
 
+// connects dangling arrows in the ptr_list `list` to `state`
 void
-patch_list(ptr_list* list, re_state* start)
+patch_list(ptr_list* list, re_state* state)
 {
     ptr_list* next;
     while(list)
     {
 	next = list->next;
-	list->curr_state = start;
+	list->curr_state = state;
 	list = next;
     }
 }
 
-// appends two ptr_lists to each other and returns the result (one list)
+// concatenates two ptr_lists to each other and returns the result (one list)
 ptr_list*
 append(ptr_list* first_list, ptr_list* second_list)
 {
@@ -109,17 +111,17 @@ append(ptr_list* first_list, ptr_list* second_list)
 typedef
 struct nfa_fragment
 {
-    re_state* start_state;
+    re_state* initial_state;
     ptr_list* out;
 } nfa_fragment;
 
 
 // initializing an NFA fragment
 nfa_fragment
-init_fragment(re_state* start, ptr_list* out)
+init_fragment(re_state* state, ptr_list* out)
 {
     nfa_fragment frag;
-    frag.start_state = start;
+    frag.initial_state = state;
     frag.out = out;
     return frag;
 }
@@ -210,4 +212,54 @@ re_infix2postfix(char* regex)
     return postfix_regex;
 }
 
+/*  Converts the postfix regular expression returned by re_infix2postfix into the equivalent NFA.
+ *  At the end of the compilation loop only one fragment remains, this fragment is patched to a matching state
+ *  and the NFA is then complete
+ */
 
+/*  This is an implementation of Thompson's Construction algorithm (https://en.wikipedia.org/wiki/Thompson%27s_construction)
+ *  Thompson's Construction algorithm, briefly described:
+ *      -> Parse postfix expressions from left to right
+ *      -> Build an NFA (in this case, an `nfa_fragment`) for each character read
+ *      -> Each NFA built will require an initial state and an accepting state
+ *      -> NFA pushed to stack (the nfa_fragment stack)
+ *      -> When a "special" character (operator) is processed, stack will be popped and push accordingly
+ *      -> NFA fragments will keep merging, creating bigger NFA fragments, until the compilation process is over
+ *      -> Then the last NFA fragment will be popped and patched to the matching state, and the NFA is completed.
+ */
+re_state*
+re_postfix2nfa(char* postfix_regex)
+{
+    nfa_fragment frag_stack[1024];
+    nfa_fragment* stackPtr;
+    nfa_fragment expr1, expr2, expr;
+    re_state* state;
+
+    // if input regex was empty/length == 0
+    if(postfix_regex == NULL)
+	return NULL;
+
+    stackPtr = frag_stack;
+    for(size_t idx = 0; postfix_regex[idx] != 0; ++idx)
+    {
+	char curr_char = postfix_regex[idx];
+	switch(curr_char)
+	{
+	case '.':
+	    break;
+	case '|':
+	    break;
+	case '?':
+	    break;
+	case '*':
+	    break;
+	case '+':
+	    break;
+	default:
+	    break;
+	}
+    }
+
+    // the complete NFA's starting state
+    return expr.initial_state;
+}
